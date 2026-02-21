@@ -114,9 +114,11 @@ export = {
 				return res.status(200).json({ data: [], nextCursor: null });
 			}
 
-			// get running executions so we exclude them from the result
+			// get running workflows so we exclude them from the result
+			// but keep waiting executions as they should be visible in the API
 			const runningExecutionsIds = Container.get(ActiveExecutions)
 				.getActiveExecutions()
+				.filter(({ status }) => status !== 'waiting')
 				.map(({ id }) => id);
 
 			const filters: Parameters<typeof ExecutionRepository.prototype.getExecutionsForPublicApi>[0] =
